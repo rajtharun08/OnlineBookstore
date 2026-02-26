@@ -4,8 +4,8 @@ from app.models.book import Book
 from uuid import UUID
 
 class BookRepository:
-    def get_all(self,db:Session):
-        return db.query(Book).all()
+    def get_all(self,db:Session,skip:int=0,limit:int=10):
+        return db.query(Book).offset(skip).limit(limit).all()
     
     def get_by_id(self,db:Session,book_id:UUID):
         return db.query(Book).filter(Book.id==book_id).first()

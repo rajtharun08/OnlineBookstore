@@ -9,8 +9,8 @@ class BookService:
     def __init__(self,book_repo:BookRepository):
         self.book_repo=book_repo
     
-    def get_all_books(self,db:Session):
-        return self.book_repo.get_all(db)
+    def get_all_books(self, db: Session, skip: int = 0, limit: int = 10):
+        return self.book_repo.get_all(db, skip=skip, limit=limit)
     
     def get_book_by_id(self,db:Session,book_id:UUID):
         book = self.book_repo.get_by_id(db, book_id)
