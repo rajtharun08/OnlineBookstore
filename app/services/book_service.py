@@ -12,7 +12,7 @@ class BookService:
         return self.book_repo.get_all(db)
     
     def get_book_by_id(self,db:Session,book_id:UUID):
-        return self.book_repo.get_by_id(db,UUID)
+        return self.book_repo.get_by_id(db,book_id)
     
     def create_book(self,db:Session,book_in:BookCreate):
         return self.book_repo.create(db,book_in)
