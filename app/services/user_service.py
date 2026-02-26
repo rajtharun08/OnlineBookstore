@@ -21,3 +21,16 @@ class UserService:
         if not user or not verify_password(password, user.password_hash):
             return False
         return user
+    
+    def login_user(self, db: Session, email: str, password: str):
+        user = self.user_repo.get_by_email(db, email)
+        if not user or not verify_password(password, user.password_hash):
+            raise OnlineBookstoreException(
+                message="Invalid email or password", 
+                status_code=401
+            )
+        access_token = create_access_token(subject=str(user.id))
+        return {
+            "access_token": access_token, 
+            "token_type": "bearer"
+        }
