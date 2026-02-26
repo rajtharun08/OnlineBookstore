@@ -15,7 +15,7 @@ app = FastAPI(
 app.add_exception_handler(OnlineBookstoreException, bookstore_exception_handler)
 app.add_middleware(LoggingMiddleware)
 
-app.include_router(books.router, prefix="/books", tags=["Books"])
+app.include_router(books.router, tags=["Books"])
 
 @app.get("/")
 def root():
