@@ -7,7 +7,7 @@ if not hasattr(bcrypt, "__about__"):
     bcrypt.__about__ = type('About', (object,), {'__version__': bcrypt.__version__})
 # --------------------------------------------
 from fastapi import FastAPI
-from app.api.routes import books,auth
+from app.api.routes import books,auth,users
 from app.models.base import Base
 from app.core.database import engine
 from app.middleware.logging_middleware import LoggingMiddleware
@@ -24,6 +24,7 @@ app.add_exception_handler(OnlineBookstoreException, bookstore_exception_handler)
 app.add_middleware(LoggingMiddleware)
 
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(books.router, tags=["Books"])
 
 @app.get("/")

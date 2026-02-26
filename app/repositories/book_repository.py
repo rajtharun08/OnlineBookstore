@@ -1,4 +1,4 @@
-from app.schemas.book_schema import BookCreate,BookResponse
+from app.schemas.book_schema import BookCreate,BookResponse,BookUpdate
 from sqlalchemy.orm import Session
 from app.models.book import Book
 from uuid import UUID
@@ -22,3 +22,18 @@ class BookRepository:
         db.commit()
         db.refresh(db_book)
         return db_book
+    
+    def update(self, db: Session, db_book: Book, book_in: BookUpdate):
+        # Update fields dynamically if they were provided
+        update_data = book_in.model_dump(exclude_unset=True)
+        for field, value in update_data.items():
+            setattr(db_book, field, value)
+        
+        db.commit()
+        db.refresh(db_book)
+        return db_book
+
+    def delete(self, db: Session, db_book: Book):
+        db.delete(db_book)
+        db.commit()
+        return True

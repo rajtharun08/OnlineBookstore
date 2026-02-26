@@ -16,4 +16,9 @@ class BookResponse(BookBase):
     id:UUID
     class Config:
         from_attributes=True
+        
+class BookUpdate(BaseModel):
+    title: Optional[str] = None
+    author: Optional[str] = None
+    price: Optional[float] = None
 
