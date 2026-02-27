@@ -1,27 +1,41 @@
-def test_order_reduces_stock(client, db):
-    # 1. Login to get a token
-    login_res = client.post("/auth/login", data={
-        "username": "testuser@example.com", 
-        "password": "securepassword123"
-    })
-    token = login_res.json()["access_token"]
-    headers = {"Authorization": f"Bearer {token}"}
-    # 2. Get a book and check initial stock
-    book_response = client.get("/books/", headers=headers)
-    assert book_response.status_code == 200
+def test_place_order_success(client, user_token, admin_token, db):
+    # 1. Create a book as admin
+    headers_adm = {"Authorization": f"Bearer {admin_token}"}
+    book = client.post("/books/", json={"title": "Test", "author": "A", "price": 10, "stock_quantity": 5}, headers=headers_adm).json()
     
-    book_data = book_response.json()[0]
-    book_id = book_data["id"]  
-    initial_stock = book_data["stock_quantity"] 
-
-    # 3. Place an order
-    order_data = {"items": [{"book_id": book_id, "quantity": 1}]}
-    order_response = client.post("/orders/", json=order_data, headers=headers)
-    assert order_response.status_code == 201
-
-    # 4. Check stock again and verify deduction
-    updated_book_res = client.get(f"/books/{book_id}", headers=headers)
-    updated_book = updated_book_res.json()
+    # 2. Place order as user
+    headers_usr = {"Authorization": f"Bearer {user_token}"}
+    order_payload = {"items": [{"book_id": book["id"], "quantity": 2}]}
+    response = client.post("/orders/", json=order_payload, headers=headers_usr)
     
-    # Assert that the stock is exactly 1 less than before
-    assert updated_book["stock_quantity"] == initial_stock - 1
+    assert response.status_code == 201
+    assert response.json()["total_price"] == 20.0
+
+def test_insufficient_stock(client, user_token, admin_token):
+    headers_adm = {"Authorization": f"Bearer {admin_token}"}
+    book = client.post("/books/", json={"title": "Test", "author": "A", "price": 10, "stock_quantity": 1}, headers=headers_adm).json()
+    
+    headers_usr = {"Authorization": f"Bearer {user_token}"}
+    response = client.post("/orders/", json={"items": [{"book_id": book["id"], "quantity": 5}]}, headers=headers_usr)
+    assert response.status_code == 400
+    assert "stock" in response.json()["message"]
+
+def test_order_history_empty(client, user_token):
+    headers = {"Authorization": f"Bearer {user_token}"}
+    response = client.get("/orders/my-orders", headers=headers)
+    assert response.status_code == 404
+
+def test_stock_decreases_after_order(client, user_token, admin_token):
+    headers_adm = {"Authorization": f"Bearer {admin_token}"}
+    book_id = client.post("/books/", json={"title": "StockTest", "author": "A", "price": 10, "stock_quantity": 10}, headers=headers_adm).json()["id"]
+    
+    headers_usr = {"Authorization": f"Bearer {user_token}"}
+    client.post("/orders/", json={"items": [{"book_id": book_id, "quantity": 3}]}, headers=headers_usr)
+
+    book_after = client.get(f"/books/{book_id}").json()
+    assert book_after["stock_quantity"] == 7
+
+def test_order_non_existent_book(client, user_token):
+    headers = {"Authorization": f"Bearer {user_token}"}
+    response = client.post("/orders/", json={"items": [{"book_id": "00000000-0000-0000-0000-000000000000", "quantity": 1}]}, headers=headers)
+    assert response.status_code in [404,400]
