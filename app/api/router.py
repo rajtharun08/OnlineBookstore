@@ -1,7 +1,9 @@
 from fastapi import APIRouter
-from app.api import router
+from app.api.routes import auth, books, users, orders
 
 api_router = APIRouter()
 
-# Registering all sub-routers with their specific prefixes
-app.include_router(api_router)
+api_router.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+api_router.include_router(users.router, prefix="/users", tags=["Users"])
+api_router.include_router(books.router, prefix="/books", tags=["Books"])
+api_router.include_router(orders.router, prefix="/orders", tags=["Orders"])

@@ -1,6 +1,8 @@
 import re
+from app.exceptions.custom_exceptions import OnlineBookstoreException
 
-def is_valid_email(email: str) -> bool:
-    """Validates email format using regex."""
-    email_regex = r'^\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
-    return re.match(email_regex, email) is not None
+def validate_email_format(email: str):
+    """Checks if email follows standard format."""
+    regex = r'^\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+    if not re.match(regex, email):
+        raise OnlineBookstoreException(message="Invalid email format", status_code=400)
