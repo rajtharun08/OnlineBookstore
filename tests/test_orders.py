@@ -6,14 +6,13 @@ def test_order_reduces_stock(client, db):
     })
     token = login_res.json()["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
-
-    # 2. Get a book and store its initial stock and ID
+    # 2. Get a book and check initial stock
     book_response = client.get("/books/", headers=headers)
     assert book_response.status_code == 200
     
     book_data = book_response.json()[0]
-    book_id = book_data["id"]  # FIX: Defined the missing variable
-    initial_stock = book_data["stock_quantity"] # FIX: Defined the missing variable
+    book_id = book_data["id"]  
+    initial_stock = book_data["stock_quantity"] 
 
     # 3. Place an order
     order_data = {"items": [{"book_id": book_id, "quantity": 1}]}
