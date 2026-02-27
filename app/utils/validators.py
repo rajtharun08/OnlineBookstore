@@ -13,3 +13,16 @@ def validate_password_strength(password: str):
         raise OnlineBookstoreException(message="Password must contain at least one number", status_code=400)
     if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
         raise OnlineBookstoreException(message="Password must contain at least one special character", status_code=400)
+    
+def validate_book_data(price: float, stock: int):
+    """Ensures business logic for inventory is met."""
+    if price <= 0:
+        raise OnlineBookstoreException(message="Price must be greater than zero", status_code=400)
+    if stock < 0:
+        raise OnlineBookstoreException(message="Stock cannot be negative", status_code=400)
+
+def validate_role(role: str):
+    """Prevents users from injecting invalid roles."""
+    allowed_roles = ["customer", "admin"]
+    if role not in allowed_roles:
+        raise OnlineBookstoreException(message=f"Invalid role. Allowed: {allowed_roles}", status_code=400)
