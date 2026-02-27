@@ -1,20 +1,45 @@
-# Python
+# --- Python Specific ---
 __pycache__/
 *.py[cod]
 *$py.class
-.venv/
-venv/
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Credentials
+# --- Environments & Virtual Envs ---
 .env
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
-# Database
+# --- Docker Specific ---
+.dockerignore
+docker-data/
 postgres-data/
 
-# IDEs
+# --- Databases ---
+*.sqlite
+*.db
+
+# --- IDEs & OS ---
 .vscode/
 .idea/
-
-# OS
+.DS_Store
 Thumbs.db
-Desktop.ini
