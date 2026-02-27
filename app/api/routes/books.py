@@ -19,13 +19,12 @@ def create_book(book_in: BookCreate, db: Session = Depends(get_db),current_user 
     return book_service.create_book(db, book_in)
 
 @router.get("/", response_model=List[BookResponse])
-def read_books(db: Session = Depends(get_db),skip:int=0,limit:int=10,current_user = Depends(role_required(["customer", "admin"]))):
+def read_books(db: Session = Depends(get_db),skip:int=0,limit:int=10):
     return book_service.get_all_books(db,skip=skip,limit=limit)
 
 @router.get("/{book_id}", response_model=BookResponse)
 def read_book(book_id: UUID, db: Session = Depends(get_db)):
     return book_service.get_book_by_id(db, book_id)
-
 
 @router.put("/{id}", response_model=BookResponse)
 def update_existing_book(id: UUID, book_in: BookUpdate, db: Session = Depends(get_db),current_user = Depends(role_required(["admin"])) ):
