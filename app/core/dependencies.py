@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from uuid import UUID
 
 from app.core.config import settings
+from app.exceptions.custom_exceptions import UnauthorizedRoleException
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
 
@@ -45,10 +46,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
 def role_required(allowed_roles: list[str]):
     def role_checker(current_user: User = Depends(get_current_user)):
         if current_user.role not in allowed_roles:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Access denied. Required roles: {allowed_roles}"
-            )
+            raise UnauthorizedRoleException()
         return current_user
     return role_checker
 

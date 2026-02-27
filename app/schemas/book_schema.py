@@ -21,4 +21,5 @@ class BookUpdate(BaseModel):
     title: Optional[str] = None
     author: Optional[str] = None
     price: Optional[float] = None
+    stock_quantity: Optional[int] = None
 

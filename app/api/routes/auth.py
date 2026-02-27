@@ -17,7 +17,3 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
 @router.post("/login")
 def login(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
     return user_service.login_user(db, email=form_data.username, password=form_data.password)
-
-@router.get("/profile", response_model=UserResponse)
-def get_profile(current_user = Depends(get_current_user)):
-    return current_user
