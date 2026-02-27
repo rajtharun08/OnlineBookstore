@@ -17,3 +17,17 @@ class DatabaseConnectionException(OnlineBookstoreException):
             message="Could not connect to the database.",
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE
         )
+        
+class InsufficientStockException(OnlineBookstoreException):
+    def __init__(self, book_title: str):
+        super().__init__(
+            message=f"Sorry, '{book_title}' is out of stock or has insufficient quantity.",
+            status_code=status.HTTP_400_BAD_REQUEST
+        )
+
+class UnauthorizedRoleException(OnlineBookstoreException):
+    def __init__(self):
+        super().__init__(
+            message="You do not have the required permissions to perform this action.",
+            status_code=status.HTTP_403_FORBIDDEN
+        )
