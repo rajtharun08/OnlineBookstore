@@ -28,10 +28,10 @@ def read_book(book_id: UUID, db: Session = Depends(get_db)):
 
 
 @router.put("/{id}", response_model=BookResponse)
-def update_existing_book(id: UUID, book_in: BookUpdate, db: Session = Depends(get_db),current_user = Depends(get_current_user) ):
+def update_existing_book(id: UUID, book_in: BookUpdate, db: Session = Depends(get_db),current_user = Depends(role_required(["admin"])) ):
     return book_service.update_book(db, book_id=id, book_in=book_in)
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_existing_book(id: UUID, db: Session = Depends(get_db),current_user = Depends(get_current_user) ):
+def delete_existing_book(id: UUID, db: Session = Depends(get_db),current_user = Depends(role_required(["admin"])) ):
     book_service.delete_book(db, book_id=id)
     return None

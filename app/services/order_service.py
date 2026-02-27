@@ -50,3 +50,6 @@ class OrderService:
         db.commit()
         db.refresh(new_order)
         return new_order
+    
+    def get_user_history(self, db: Session, user_id: UUID):
+        return self.order_repo.get_user_orders(db, user_id)

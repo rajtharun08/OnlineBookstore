@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session,joinedload
 from app.models.order import Order
 from app.models.order_item import OrderItem
 from app.schemas.order_schema import OrderCreate
@@ -27,3 +27,6 @@ class OrderRepository:
 
     def get_user_orders(self, db: Session, user_id: UUID):
         return db.query(Order).filter(Order.user_id == user_id).all()
+    
+    def get_user_orders(self, db: Session, user_id: UUID):
+        return db.query(Order).options(joinedload(Order.items)).filter(Order.user_id == user_id).all()
