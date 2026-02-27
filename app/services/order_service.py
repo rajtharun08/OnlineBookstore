@@ -5,7 +5,7 @@ from app.repositories.order_item_repository import OrderItemRepository
 from app.repositories.book_repository import BookRepository
 from app.schemas.order_schema import OrderCreate
 from app.models.order_item import OrderItem
-from app.exceptions.custom_exceptions import OnlineBookstoreException
+from app.exceptions.custom_exceptions import InsufficientStockException, OnlineBookstoreException
 
 class OrderService:
     def __init__(
@@ -26,7 +26,7 @@ class OrderService:
         for item in order_in.items:
             book = self.book_repo.get_by_id(db, item.book_id)
             if not book or book.stock_quantity < item.quantity:
-                raise OnlineBookstoreException(message="Book unavailable or out of stock", status_code=400)
+              raise InsufficientStockException(book_title=book.title if book else "Unknown Book")
             
             # Reduce stock and prepare item data
             book.stock_quantity -= item.quantity
