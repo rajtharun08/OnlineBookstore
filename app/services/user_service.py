@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from app.models import user
 from app.repositories.user_repository import UserRepository
 from app.schemas.user_schema import UserCreate
 from app.core.security import hash_password
@@ -30,7 +31,7 @@ class UserService:
                 message="Invalid email or password", 
                 status_code=401
             )
-        access_token = create_access_token(subject=str(user.id))
+        access_token = create_access_token(data={"sub": str(user.id), "role": user.role})
         return {
             "access_token": access_token, 
             "token_type": "bearer"
