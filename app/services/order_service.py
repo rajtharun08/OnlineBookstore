@@ -1,45 +1,52 @@
 from sqlalchemy.orm import Session
+from uuid import UUID
 from app.repositories.order_repository import OrderRepository
+from app.repositories.order_item_repository import OrderItemRepository
 from app.repositories.book_repository import BookRepository
 from app.schemas.order_schema import OrderCreate
+from app.models.order_item import OrderItem
 from app.exceptions.custom_exceptions import OnlineBookstoreException
-from uuid import UUID
 
 class OrderService:
-    def __init__(self, order_repo: OrderRepository, book_repo: BookRepository):
+    def __init__(
+        self, 
+        order_repo: OrderRepository, 
+        book_repo: BookRepository, 
+        item_repo: OrderItemRepository # Injecting the item repo here
+    ):
         self.order_repo = order_repo
         self.book_repo = book_repo
+        self.item_repo = item_repo
 
     def place_order(self, db: Session, user_id: UUID, order_in: OrderCreate):
         total_price = 0
-        items_to_create = []
+        validated_items = []
 
-        # 1. Validate books and calculate total
+        # 1. Validate stock and calculate price snapshot
         for item in order_in.items:
             book = self.book_repo.get_by_id(db, item.book_id)
-            if not book:
-                raise OnlineBookstoreException(message=f"Book {item.book_id} not found", status_code=404)
+            if not book or book.stock_quantity < item.quantity:
+                raise OnlineBookstoreException(message="Book unavailable or out of stock", status_code=400)
             
+            # Reduce stock and prepare item data
+            book.stock_quantity -= item.quantity
             total_price += book.price * item.quantity
-            items_to_create.append((book, item.quantity))
+            validated_items.append({"book": book, "qty": item.quantity})
 
-        # 2. Create the Order
-        db_order = self.order_repo.create_order(db, user_id, total_price)
+        # 2. Create the Order entry
+        new_order = self.order_repo.create_order(db, user_id, total_price)
 
-        # 3. Create Order Items
-        for book, quantity in items_to_create:
-            self.order_repo.create_order_item(
-                db, 
-                order_id=db_order.id, 
-                book_id=book.id, 
-                quantity=quantity, 
-                price=book.price
-            )
+        # 3. Create OrderItems directly using the Item Repository
+        db_items = [
+            OrderItem(
+                order_id=new_order.id, 
+                book_id=i["book"].id, 
+                quantity=i["qty"], 
+                price_at_purchase=i["book"].price
+            ) for i in validated_items
+        ]
+        self.item_repo.create_items(db, db_items)
 
         db.commit()
-        db.refresh(db_order)
-        return db_order
-    
-    def get_user_history(self, db: Session, user_id: UUID):
-        orders = self.order_repo.get_user_orders(db, user_id=user_id)
-        return orders
+        db.refresh(new_order)
+        return new_order

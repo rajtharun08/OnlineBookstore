@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import Column, String, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from app.models.base import Base
-
+from sqlalchemy.orm import relationship
 class User(Base):
     __tablename__ = "users"
 
@@ -12,3 +12,4 @@ class User(Base):
     password_hash = Column(String, nullable=False)
     role = Column(String, default="customer", nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+    orders = relationship("Order", back_populates="user", cascade="all, delete-orphan")

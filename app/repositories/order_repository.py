@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
-from app.models.order import Order, OrderItem
+from app.models.order import Order
+from app.models.order_item import OrderItem
 from app.schemas.order_schema import OrderCreate
 from uuid import UUID
 

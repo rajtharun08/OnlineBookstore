@@ -6,13 +6,15 @@ from app.core.dependencies import get_current_user
 from app.schemas.order_schema import OrderCreate, OrderResponse
 from app.services.order_service import OrderService
 from app.repositories.order_repository import OrderRepository
+from app.repositories.order_item_repository import OrderItemRepository
 from app.repositories.book_repository import BookRepository
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
 
 order_service = OrderService(
-    order_repo=OrderRepository(), 
-    book_repo=BookRepository()
+    order_repo=OrderRepository(),
+    book_repo=BookRepository(),
+    item_repo=OrderItemRepository()
 )
 
 @router.post("/", response_model=OrderResponse, status_code=status.HTTP_201_CREATED)
