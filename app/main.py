@@ -29,3 +29,7 @@ app.include_router(api_router)
 @app.get("/", tags=["Root"])
 def read_root():
     return {"message": "Welcome to the Online Bookstore API. Visit /docs for Swagger UI."}
+
+@app.get("/health", tags=["System"])
+def health_check():
+    return {"status": "ok", "message": "Bookstore API is healthy"}
