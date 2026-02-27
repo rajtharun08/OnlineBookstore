@@ -11,3 +11,12 @@ async def bookstore_exception_handler(request: Request, exc: OnlineBookstoreExce
             "message": exc.message
         }
     )
+
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={
+            "status": "error",
+            "message": "An unexpected internal server error occurred."
+        }
+    )

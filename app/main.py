@@ -7,19 +7,15 @@ from app.models.base import Base
 from app.middleware.logging_middleware import LoggingMiddleware
 from app.middleware.cors import setup_cors
 from app.exceptions.custom_exceptions import OnlineBookstoreException
-from app.exceptions import exception_handlers
+from app.exceptions.exception_handlers import global_exception_handler, bookstore_exception_handler
 
 
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Online Bookstore API")
-@app.exception_handler(OnlineBookstoreException)
-async def custom_exception_handler(request: Request, exc: OnlineBookstoreException):
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={"error": exc.message, "code": "BOOKSTORE_ERROR"},
-    )
+app.add_exception_handler(OnlineBookstoreException, bookstore_exception_handler)
+app.add_exception_handler(Exception, global_exception_handler)
 
 setup_cors(app)
 
