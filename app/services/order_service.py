@@ -39,3 +39,7 @@ class OrderService:
         db.commit()
         db.refresh(db_order)
         return db_order
+    
+    def get_user_history(self, db: Session, user_id: UUID):
+        orders = self.order_repo.get_user_orders(db, user_id=user_id)
+        return orders

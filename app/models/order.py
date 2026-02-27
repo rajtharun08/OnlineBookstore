@@ -3,7 +3,7 @@ from sqlalchemy import Column, ForeignKey, Float, Integer, String, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from app.core.database import Base
+from app.models.base import Base
 
 class Order(Base):
     __tablename__ = "orders"
