@@ -5,7 +5,7 @@ API for online bookstore
 
 - **main**: Stable monolithic architecture (Default)
 
-- **microservices-version**: Decoupled architecture with API Gateway and Service Discovery  
+- **microservices-version**: Split into independent services for Book, Auth, and Orders.  
   ->> [View Microservices Branch](https://github.com/rajtharun08/OnlineBookstore/tree/microservices-version)
 
 - To switch locally:
