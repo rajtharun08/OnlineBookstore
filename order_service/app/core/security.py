@@ -3,7 +3,7 @@ from fastapi import HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordBearer
 from app.core.config import settings
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="http://localhost:8001/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 def decode_access_token(token: str):
     try:

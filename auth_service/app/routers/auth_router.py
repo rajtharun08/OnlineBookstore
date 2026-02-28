@@ -5,6 +5,7 @@ from app.database.session import get_db
 from app.schemas.auth_schema import UserCreate, UserResponse, Token
 from app.services.auth_service import AuthService
 from app.repositories.user_repository import UserRepository
+from app.core.security import get_current_user
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -36,3 +37,12 @@ def login_for_access_token(
     
     access_token = auth_service.generate_token(user)
     return {"access_token": access_token, "token_type": "bearer"}
+
+@router.get("/users/me", response_model=UserResponse)
+def read_users_me(
+    db: Session = Depends(get_db), 
+    current_user_id: int = Depends(get_current_user)
+):
+    repo = UserRepository(db)
+    service = AuthService(repo)
+    return service.get_current_user_profile(db, current_user_id)

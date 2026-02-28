@@ -1,3 +1,5 @@
+from http.client import HTTPException
+
 from sqlalchemy.orm import Session
 from app.repositories.user_repository import UserRepository
 from app.core.security import verify_password, create_access_token
@@ -24,3 +26,11 @@ class AuthService:
             "role": user.role,
             "email": user.email
         })
+    
+    from fastapi import HTTPException
+
+def get_current_user_profile(self, db: Session, user_id: int):
+    user = self.user_repo.get_user_by_id(db, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user

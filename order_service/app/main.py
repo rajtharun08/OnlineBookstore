@@ -1,16 +1,16 @@
 from fastapi import FastAPI
 from app.routers import order_router
-from app.database.session import engine, Base
+from app.database.session import create_tables, engine, Base
 from app.models import order
 from app.exceptions.custom_exceptions import OrderServiceException
 from app.exceptions.exception_handler import order_exception_handler 
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Bookstore Order Service",
     description="Handles transactions and inter-service stock coordination",
     version="1.0.0"
 )
+create_tables()
 app.add_exception_handler(OrderServiceException, order_exception_handler)
 
 app.include_router(order_router.router)

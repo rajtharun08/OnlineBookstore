@@ -23,7 +23,7 @@ class OrderService:
             if book_res.status_code == 404:
                 raise InventoryConflictException("The book does not exist in our catalog.")
 
-            book_data = book_res.json()
+            book_data = await book_res.json()
 
             # check stock
             if book_data["stock"] < order_in.quantity:

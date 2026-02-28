@@ -1,16 +1,15 @@
 from app.exceptions.exception_handler import book_service_exception_handler,BookServiceException
 from fastapi import FastAPI
 from app.routers import book_router
-from app.database.session import engine, Base
+from app.database.session import create_tables, engine, Base
 from app.models import book 
-
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Bookstore Catalog Service",
     description="Microservice for managing book inventory and pricing",
     version="1.0.0"
 )
+create_tables()
 app.add_exception_handler(BookServiceException, book_service_exception_handler)
 app.include_router(book_router.router)
 

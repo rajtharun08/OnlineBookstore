@@ -1,0 +1,102 @@
+services:
+  # --- DATABASES ---
+  auth-db:
+    image: postgres:15
+    container_name: auth-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Tharun@08
+      - POSTGRES_DB=auth_db
+    ports:
+      - "5433:5432"
+    networks:
+      - bookstore-network
+
+  book-db:
+    image: postgres:15
+    container_name: book-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Tharun@08
+      - POSTGRES_DB=book_db
+    ports:
+      - "5434:5432"
+    networks:
+      - bookstore-network
+
+  order-db:
+    image: postgres:15
+    container_name: order-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Tharun@08
+      - POSTGRES_DB=order_db
+    ports:
+      - "5435:5432"
+    networks:
+      - bookstore-network
+
+  # --- MICROSERVICES ---
+  auth-service:
+    build: ./auth_service
+    container_name: auth-service
+    environment:
+      - DATABASE_URL=postgresql://postgres:Tharun%4008@auth-db:5432/auth_db
+      - SECRET_KEY=your_super_secret_key
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=30
+    depends_on:
+      - auth-db
+    networks:
+      - bookstore-network
+
+  book-service:
+    build: ./book_service
+    container_name: book-service
+    environment:
+      - DATABASE_URL=postgresql://postgres:Tharun%4008@book-db:5432/book_db
+      - INTERNAL_SERVICE_SECRET=my_internal_communication_secret_123
+      - SECRET_KEY=your_super_secret_key
+      - ALGORITHM=HS256
+    depends_on:
+      - book-db
+    networks:
+      - bookstore-network
+
+  order-service:
+    build: ./order_service
+    container_name: order-service
+    environment:
+      - DATABASE_URL=postgresql://postgres:Tharun%4008@order-db:5432/order_db
+      - BOOK_SERVICE_URL=http://book-service:8000
+      - INTERNAL_SERVICE_SECRET=my_internal_communication_secret_123
+      - SECRET_KEY=your_super_secret_key
+      - ALGORITHM=HS256
+    depends_on:
+      - order-db
+      - book-service
+    networks:
+      - bookstore-network
+
+  # --- API GATEWAY ---
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - AUTH_SERVICE_URL=http://auth-service:8000
+      - BOOK_SERVICE_URL=http://book-service:8000
+      - ORDER_SERVICE_URL=http://order-service:8000
+      - SECRET_KEY=your_super_secret_key
+      - ALGORITHM=HS256
+    depends_on:
+      - auth-service
+      - book-service
+      - order-service
+    networks:
+      - bookstore-network
+
+networks:
+  bookstore-network:
+    driver: bridge
