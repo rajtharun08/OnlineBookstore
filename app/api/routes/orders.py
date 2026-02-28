@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from typing import List
-from app.core.dependencies import get_db
+from app.core.dependencies import get_db, role_required
 from app.core.dependencies import get_current_user
 from app.schemas.order_schema import OrderCreate, OrderResponse
 from app.services.order_service import OrderService
@@ -31,3 +31,7 @@ def get_my_orders(
     current_user = Depends(get_current_user) 
 ):
     return order_service.get_user_history(db, user_id=current_user.id)
+
+@router.get("/admin/sales-report", dependencies=[Depends(role_required("admin"))])
+def get_sales_report(db: Session = Depends(get_db)):
+    return order_service.get_admin_report(db)

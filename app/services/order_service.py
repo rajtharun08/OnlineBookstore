@@ -53,3 +53,6 @@ class OrderService:
     
     def get_user_history(self, db: Session, user_id: UUID):
         return self.order_repo.get_user_orders(db, user_id)
+
+    def get_admin_report(self, db: Session):
+        return self.order_repo.get_sales_stats(db)

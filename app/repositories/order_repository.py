@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from sqlalchemy.orm import Session,joinedload
 from app.models.order import Order
 from app.models.order_item import OrderItem
@@ -30,3 +31,14 @@ class OrderRepository:
     
     def get_user_orders(self, db: Session, user_id: UUID):
         return db.query(Order).options(joinedload(Order.items)).filter(Order.user_id == user_id).all()
+    
+    def get_sales_stats(self, db: Session):
+        stats = db.query(
+            func.count(Order.id).label("total_orders"),
+            func.sum(Order.total_price).label("total_revenue")
+        ).first()
+        
+        return {
+            "total_orders": stats.total_orders or 0,
+            "total_revenue": float(stats.total_revenue or 0)
+        }
