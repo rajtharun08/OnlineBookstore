@@ -6,5 +6,6 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://postgres:Tharun%4008@localhost:5432/book_db")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    INTERNAL_SERVICE_SECRET: str = "my_internal_communication_secret_123"
 
 settings = Settings()
