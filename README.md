@@ -5,6 +5,7 @@ API for online bookstore
 ```
 * **main**: Stable monolithic architecture (Default)
 * **microservices-version**: Decoupled architecture with API Gateway and Service Discovery
+    [View Microservices Branch](https://github.com/rajtharun08/OnlineBookstore/tree/microservices-version)
   * To switch: `git checkout microservices-version`
 ```
 # Tech Stack
