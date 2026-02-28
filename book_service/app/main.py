@@ -1,3 +1,4 @@
+from app.exceptions.exception_handler import book_service_exception_handler,BookServiceException
 from fastapi import FastAPI
 from app.routers import book_router
 from app.database.session import engine, Base
@@ -10,7 +11,7 @@ app = FastAPI(
     description="Microservice for managing book inventory and pricing",
     version="1.0.0"
 )
-
+app.add_exception_handler(BookServiceException, book_service_exception_handler)
 app.include_router(book_router.router)
 
 @app.get("/health", tags=["Health"])

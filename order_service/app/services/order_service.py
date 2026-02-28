@@ -1,4 +1,5 @@
 import httpx
+from app.exceptions.custom_exceptions import InventoryConflictException,ServiceUnavailableException,InventoryUpdateException
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from app.repositories.order_repository import OrderRepository
@@ -10,23 +11,27 @@ class OrderService:
 
     async def place_order(self, db: Session, user_id: str, order_in, token: str):
         async with httpx.AsyncClient() as client:
-            # get details from book service
-            book_res = await client.get(
-                f"{settings.BOOK_SERVICE_URL}/books/{order_in.book_id}",
-                headers={"Authorization": f"Bearer {token}"}
-            )
-            
-            if book_res.status_code != 200:
-                raise HTTPException(status_code=404, detail="Book not found")
-            
+            #get details from book service
+            try:
+                book_res = await client.get(
+                    f"{settings.BOOK_SERVICE_URL}/books/{order_in.book_id}",
+                    headers={"Authorization": f"Bearer {token}"}
+                )
+            except httpx.RequestError:
+                raise ServiceUnavailableException("Book Service")
+
+            if book_res.status_code == 404:
+                raise InventoryConflictException("The book does not exist in our catalog.")
+
             book_data = book_res.json()
 
             # check stock
             if book_data["stock"] < order_in.quantity:
-                raise HTTPException(status_code=400, detail="Insufficient stock")
+                raise InventoryConflictException(f"Insufficient stock. Available: {book_data['stock']}")
 
-            # reduce stock in book service
+            # Reduce stock in book service
             new_stock = book_data["stock"] - order_in.quantity
+        
             update_res = await client.put(
                 f"{settings.BOOK_SERVICE_URL}/books/{order_in.book_id}",
                 json={"stock": new_stock},
@@ -37,8 +42,9 @@ class OrderService:
             )
 
             if update_res.status_code != 200:
-                raise HTTPException(status_code=500, detail="Failed to update inventory")
+                raise InventoryUpdateException()
 
+            
             order_data = {
                 "user_id": user_id,
                 "book_id": str(order_in.book_id),
@@ -46,8 +52,7 @@ class OrderService:
                 "total_price": book_data["price"] * order_in.quantity,
                 "status": "completed"
             }
-            return self.order_repo.create(db, order_data)
-        
+            return self.order_repo.create(db, order_data)        
     def get_user_history(self, db: Session, user_id: str):
         return self.order_repo.get_user_orders(db, user_id)
 

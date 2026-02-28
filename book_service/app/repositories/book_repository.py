@@ -2,8 +2,8 @@ from sqlalchemy.orm import Session
 from app.models.book import Book
 
 class BookRepository:
-    def get_all(self, db: Session):
-        return db.query(Book).all()
+    def get_all(self, db: Session, skip: int, limit: int):
+        return db.query(Book).offset(skip).limit(limit).all()
 
     def get_by_id(self, db: Session, book_id: str):
         return db.query(Book).filter(Book.id == book_id).first()
@@ -14,7 +14,10 @@ class BookRepository:
         db.commit()
         db.refresh(db_book)
         return db_book
-
+    
+    def get_total_count(self, db: Session):
+        return db.query(Book).count()
+    
     def update(self, db: Session, db_book: Book, update_data: dict):
         for key, value in update_data.items():
             if value is not None:
