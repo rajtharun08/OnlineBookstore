@@ -1,13 +1,17 @@
 # Online Bookstore API
 API for online bookstore
 
-### PROJECT BRANCHES
-```
-* **main**: Stable monolithic architecture (Default)
-* **microservices-version**: Decoupled architecture with API Gateway and Service Discovery
-    [View Microservices Branch](https://github.com/rajtharun08/OnlineBookstore/tree/microservices-version)
-  * To switch: `git checkout microservices-version`
-```
+## PROJECT BRANCHES
+
+- **main**: Stable monolithic architecture (Default)
+
+- **microservices-version**: Decoupled architecture with API Gateway and Service Discovery  
+  ->> [View Microservices Branch](https://github.com/rajtharun08/OnlineBookstore/tree/microservices-version)
+
+- To switch locally:
+  ```bash
+  git checkout microservices-version
+  ```
 # Tech Stack
 - Framework: FastAPI 
 - ORM: SQLAlchemy
