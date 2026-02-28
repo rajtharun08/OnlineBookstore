@@ -22,6 +22,7 @@ wheels/
 
 # --- Environments & Virtual Envs ---
 .env
+.env.docker
 .venv/
 env/
 venv/
