@@ -63,7 +63,7 @@ business capability.
 ------------------------------------------------------------------------
 
 ## Project Structure
-
+    |---docker-compose.yml
     ├── api-gateway/
     │   ├── app/
     │   │   ├── core/
