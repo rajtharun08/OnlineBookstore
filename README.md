@@ -146,13 +146,16 @@ Open separate terminals for each service.
 
 ## API Endpoints
 
-| Service | Endpoint           | Method | Input Format              |
-|----------|-------------------|--------|---------------------------|
-| Auth     | /auth/register/   | POST   | JSON                      |
-| Auth     | /auth/login/      | POST   | x-www-form-urlencoded     |
-| Books    | /books/           | GET    | Bearer Token              |
-| Books    | /books/           | POST   | Bearer Token + JSON       |
-| Orders   | /orders/          | POST   | Bearer Token + JSON       |
+| Service | Endpoint | Method | Input Format | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **Auth** | `/auth/register/` | **POST** | JSON | Register a new user |
+| **Auth** | `/auth/login/` | **POST** | x-www-form-urlencoded | User login / Get JWT Token |
+| **Books** | `/books/` | **GET** | Bearer Token | Get all available books |
+| **Books** | `/books/{id}` | **GET** | Path Variable | Get specific book details |
+| **Books** | `/books/` | **POST** | Bearer Token + JSON | Add a new book to inventory |
+| **Books** | `/books/{id}` | **PUT** | Bearer Token + JSON | Update existing book details |
+| **Books** | `/books/{id}` | **DELETE** | Bearer Token | Remove a book from inventory |
+| **Orders** | `/orders/` | **POST** | Bearer Token + JSON | Place a new order |
 
 
 
